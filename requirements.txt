@@ -1,0 +1,5 @@
+discord.py
+python-dotenv~=0.15.0
+RateMyProfessorAPI
+matplotlib
+numpy==1.19.3
