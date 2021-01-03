@@ -1,17 +1,15 @@
 # bot.py
 import os
 import json
-import datetime
 
 from discord.ext import commands
-from discord.ext import tasks
 from discord import Member
 from dotenv import load_dotenv
 
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-PREFIX = os.getenv('BOT_PREFIX')
+PREFIX = '!!'
 
 bot = commands.Bot(command_prefix=PREFIX)
 
