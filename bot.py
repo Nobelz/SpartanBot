@@ -9,9 +9,23 @@ from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
-PREFIX = '!!'
 
-bot = commands.Bot(command_prefix=PREFIX)
+
+def _get_prefix(client, message):
+    with open('config.json', 'r') as f:
+        configs = json.load(f)
+
+    return configs[str(message.guild.id)]["prefix"]
+
+
+def prefix(guild):
+    with open('config.json', 'r') as f:
+        configs = json.load(f)
+
+    return configs[str(guild.id)]["prefix"]
+
+
+bot = commands.Bot(command_prefix=_get_prefix)
 
 
 @bot.event
@@ -29,26 +43,44 @@ async def ping(ctx):
 async def config(ctx, *, args):
     arguments = args.split()
 
-    if arguments[0] == 'set':
-        if len(arguments) == 2:
-            with open('config.json', 'r') as f:
-                configs = json.load(f)
+    with open('config.json', 'r') as f:
+        configs = json.load(f)
+        server_dict = configs[str(ctx.guild.id)]
 
-            configs[str(ctx.guild.id)] = str(arguments[1])
+    if arguments[0] == 'set' and len(arguments) >= 3:
+        message = ""
+
+        try:
+            if arguments[1] == 'schoolname':
+                server_dict["schoolName"] = " ".join(arguments[2:])
+                message = "School name set to " + " ".join(arguments[2:]) + "."
+            elif arguments[1] == 'prefix' and len(arguments) == 3:
+                server_dict["prefix"] = arguments[2]
+                message = "Bot prefix set to " + arguments[2] + "."
+            else:
+                raise ValueError
 
             with open('config.json', 'w') as f:
                 json.dump(configs, f, indent=4)
 
-            await ctx.send(f'School Name set to {arguments[1]}.')
-        else:
-            await ctx.send(f'Proper command usage: `{PREFIX}config set <school name>` or `{PREFIX}config schoolname`')
-    elif arguments[0] == 'schoolname':
-        with open('config.json', 'r') as f:
-            configs = json.load(f)
+            await ctx.send(message)
+        except ValueError:
+            await ctx.send("Config value with that key not found or invalid syntax. Please try again.")
+    elif len(arguments) == 1:
+        if arguments[0] == 'schoolname':
+            if 'schoolName' in server_dict:
+                await ctx.send("School name: " + server_dict['schoolName'])
+            else:
+                await ctx.send(f"School name not set yet. "
+                               f"Set the school name using `{prefix(ctx.guild)}config set schoolname <school name>`")
 
-        await ctx.send(f'School Name: {configs[str(ctx.guild.id)]}')
+        elif arguments[0] == 'prefix':
+            await ctx.send("Server prefix: " + server_dict["prefix"])
+        else:
+            await ctx.send("Config value with that key not found. Please try again.")
     else:
-        await ctx.send(f'Proper command usage: `{PREFIX}config set <school name>` or `{PREFIX}config schoolname`')
+        await ctx.send(f'Proper command usage: `{prefix(ctx.guild)}config set <key> <value(s)>` or '
+                       f'`{prefix(ctx.guild)}config <key>`')
 
 
 @bot.event
@@ -56,7 +88,8 @@ async def on_guild_join(guild):
     with open('config.json', 'r') as f:
         configs = json.load(f)
 
-    configs[str(guild.id)] = "Case Western Reserve University"
+    configs[str(guild.id)] = {}
+    configs[str(guild.id)]['prefix'] = '!!'
 
     with open('config.json', 'w') as f:
         json.dump(configs, f, indent=4)
