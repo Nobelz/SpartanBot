@@ -1,5 +1,5 @@
 import json
-import ratemyprofessor
+import ratemyprofessor as rmp
 import discord
 import matplotlib.pyplot as plt
 
@@ -25,7 +25,7 @@ class RateMyProfessor(commands.Cog):
         if 'schoolName' not in configs[str(ctx.guild.id)]:
             await ctx.send("School name not set yet. Use the config command to set it before using this command.")
         else:
-            professor = ratemyprofessor.get_professor_by_school_and_name(ratemyprofessor.get_school_by_name(
+            professor = rmp.get_professor_by_school_and_name(rmp.get_school_by_name(
                 configs[str(ctx.guild.id)]['schoolName']), prof)
 
             if professor is None:
