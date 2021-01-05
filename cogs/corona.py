@@ -14,9 +14,6 @@ BOT_OWNER = os.getenv('BOT_OWNER')
 
 campus_url = "https://case.edu/return-to-campus/campus-information/covid-19-testing-and-case-data"
 
-with open('covid.js', 'r') as f:
-    script = f.read().replace('\n', '')
-
 
 class Coronavirus(commands.Cog):
 
@@ -67,28 +64,9 @@ class Coronavirus(commands.Cog):
             if len(cases_by_week_students) == len(dates) == len(cases_by_week_faculty):
                 await ctx.send("Attempting to retrieve graph image files from website...")
 
-                chart_options = {
-                    "scales": {
-                        "yAxes": [{
-                            "ticks": {
-                                "beginAtZero": True,
-                                "suggestedMax": 1
-                            }
-                        }]
-                    },
-                    "legend": {
-                        "position": "bottom"
-                    }
-                }
-
-                qc1 = QuickChart()
-                qc1.width = 1000
-                qc1.height = 500
-                qc1.config = {
-                    "type": "line",
-                    "data": {
-                        "labels": date_strings,
-                        "datasets": [{
+                cases_chart = _generate_graph(date_strings)
+                cases_chart.config["type"] = "line"
+                cases_chart.config["data"]["datasets"] = [{
                             "label": "Students",
                             "data": cases_by_week_students,
                             "lineTension": 0.4,
@@ -103,74 +81,24 @@ class Coronavirus(commands.Cog):
                             "borderColor": "rgba(97, 97, 97, 1)",
                             "borderWidth": 3
                         }]
-                    },
-                    "options": {
-                        "scales": {
-                            "yAxes": [{
-                                "ticks": {
-                                    "beginAtZero": True,
-                                    "suggestedMax": 1
-                                }
-                            }]
-                        },
-                        "legend": {
-                            "position": "bottom"
-                        },
-                        "title": {
-                            "display": True,
-                            "text": "CWRU New Positive Cases By Week",
-                            "fontSize": 22
-                        }
-                    }
-                }
+                cases_chart.config["options"]["title"]["text"] = "CWRU New Positive Cases By Week"
+                await ctx.send(cases_chart.get_short_url())
 
-                await ctx.send(qc1.get_short_url())
-
-                qc2 = QuickChart()
-                qc2.width = 1000
-                qc2.height = 500
-                qc2.config = {
-                    "type": "bar",
-                    "data": {
-                        "labels": date_strings,
-                        "datasets": [{
+                tests_chart = _generate_graph(date_strings)
+                tests_chart.config["type"] = "bar"
+                tests_chart.config["data"]["datasets"] = [{
                             "label": "Tests Administered",
                             "data": tests_administered,
                             "backgroundColor": "rgba(97, 97, 97, 0.05)",
                             "borderColor": "rgba(97, 97, 97, 1)",
                             "borderWidth": 3
                         }]
-                    },
-                    "options": {
-                        "scales": {
-                            "yAxes": [{
-                                "ticks": {
-                                    "beginAtZero": True,
-                                    "suggestedMax": 1
-                                }
-                            }]
-                        },
-                        "legend": {
-                            "position": "bottom"
-                        },
-                        "title": {
-                            "display": True,
-                            "text": "CWRU Testing: Tests Administered",
-                            "fontSize": 22
-                        }
-                    }
-                }
+                tests_chart.config["options"]["title"]["text"] = "CWRU Testing: Tests Administered"
+                await ctx.send(tests_chart.get_short_url())
 
-                await ctx.send(qc2.get_short_url())
-
-                qc3 = QuickChart()
-                qc3.width = 1000
-                qc3.height = 500
-                qc3.config = {
-                    "type": "line",
-                    "data": {
-                        "labels": date_strings,
-                        "datasets": [{
+                positive_chart = _generate_graph(date_strings)
+                positive_chart.config["type"] = "line"
+                positive_chart.config["data"]["datasets"] = [{
                             "label": "Cumulative Positivity Rate",
                             "data": percent_positive_cumulative,
                             "lineTension": 0.4,
@@ -185,32 +113,42 @@ class Coronavirus(commands.Cog):
                             "borderColor": "rgba(97, 97, 97, 1)",
                             "borderWidth": 3
                         }]
-                    },
-                    "options": {
-                        "scales": {
-                            "yAxes": [{
-                                "ticks": {
-                                    "beginAtZero": True,
-                                    "suggestedMax": 1
-                                }
-                            }]
-                        },
-                        "legend": {
-                            "position": "bottom"
-                        },
-                        "title": {
-                            "display": True,
-                            "text": "CWRU Testing: Percentage of Positive Results",
-                            "fontSize": 22
-                        }
-                    }
-                }
-
-                await ctx.send(qc3.get_short_url())
+                positive_chart.config["options"]["title"]["text"] = "CWRU Testing: Percentage of Positive Results"
+                await ctx.send(positive_chart.get_short_url())
             else:
                 await ctx.send("Error retrieving data: data mismatch")
         else:
             await ctx.send(f"Access denied. Command reserved for bot owner <@{BOT_OWNER}> only")
+
+
+def _generate_graph(date_strings):
+    chart = QuickChart()
+    chart.width = 800
+    chart.height = 400
+    chart.config = {
+        "data": {
+            "labels": date_strings
+        },
+        "options": {
+            "scales": {
+                "yAxes": [{
+                    "ticks": {
+                        "beginAtZero": True,
+                        "suggestedMax": 1
+                    }
+                }]
+            },
+            "legend": {
+                "position": "bottom"
+            },
+            "title": {
+                "display": True,
+                "fontSize": 22
+            }
+        }
+    }
+
+    return chart
 
 
 def setup(bot):
