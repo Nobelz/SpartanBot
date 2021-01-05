@@ -29,7 +29,6 @@ class Coronavirus(commands.Cog):
             await ctx.send("Bot owner recognized. This is a test of the coronavirus stats accessor system.")
 
             data = get_cwru_data()
-
             if data is not None:
                 for chart_url in data["charts"]:
                     await ctx.send(chart_url)
@@ -141,6 +140,7 @@ def get_cwru_data():
         }
     else:
         return None
+
 
 def _generate_graph(date_strings):
     chart = QuickChart()
