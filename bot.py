@@ -77,6 +77,16 @@ async def config(ctx, *, args):
                     if channel_id is not None and ctx.guild.get_channel(channel_id) is not None:
                         if "corona" not in server_dict:
                             server_dict["corona"] = {}
+                        if "messages" in server_dict["corona"]:
+                            channel = bot.get_channel(server_dict['corona']['channel'])
+                            if channel is not None:
+                                if 'messages' in server_dict['corona']:
+                                    messages = server_dict['corona']['messages']
+                                    for message_id in messages:
+                                        message = await channel.fetch_message(message_id)
+                                        if message is not None:
+                                            await message.delete()
+                            del server_dict['corona']["messages"]
                         server_dict["corona"]["channel"] = channel_id
                         message = "Corona channel set to " + arguments[2] + "."
                     else:

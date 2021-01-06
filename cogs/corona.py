@@ -24,61 +24,136 @@ class Coronavirus(commands.Cog):
     async def on_ready(self):
         print('Corona is ready.')
 
+    # corona command
+    @commands.command()
+    async def corona(self, ctx, *, args):
+        arguments = args.split(' ')
+        with open('config.json', 'r') as f:
+            configs = json.load(f)
+            server_dict = configs[str(ctx.guild.id)]
+
+        if 'corona' in server_dict and 'role' in server_dict['corona'] and 'channel' in server_dict['corona']:
+            role = ctx.guild.get_role(server_dict['corona']['role'])
+
+            if role in ctx.author.roles:
+                try:
+                    if len(arguments) == 1:
+                        if arguments[0] == 'push':
+                            channel = self.bot.get_channel(server_dict['corona']['channel'])
+                            if channel is not None:
+                                if 'messages' in server_dict['corona']:
+                                    messages = server_dict['corona']['messages']
+                                    for message_id in messages:
+                                        message = await channel.fetch_message(message_id)
+                                        if message is not None:
+                                            await message.delete()
+                                ids = []
+
+                                for embed in get_embeds():
+                                    message = await channel.send(embed=embed)
+                                    ids.append(message.id)
+                                server_dict['corona']['messages'] = ids
+
+                                with open('config.json', 'w') as f:
+                                    json.dump(configs, f, indent=4)
+
+                                end_message = f"Corona stats successfully pushed to {channel.mention}."
+                            else:
+                                raise ValueError
+                        elif arguments[0] == 'update':
+                            if 'messages' in server_dict['corona']:
+                                channel = self.bot.get_channel(server_dict['corona']['channel'])
+                                if channel is not None:
+                                    message_ids = server_dict['corona']['messages']
+                                    messages = []
+                                    for message_id in message_ids:
+                                        message = await channel.fetch_message(message_id)
+                                        messages.append(message)
+                                    ids = []
+                                    embeds = get_embeds()
+                                    for i in range(3):
+                                        await messages[i].edit(embed=embeds[i])
+
+                                    end_message = f"Corona stats successfully updated in {channel.mention}."
+                                else:
+                                    raise ValueError
+                            else:
+                                await ctx.send("Corona data has not been pushed at least once. "
+                                               "Please push data before updating data first.")
+                        else:
+                            raise ValueError
+                    else:
+                        raise ValueError
+                    await ctx.send(end_message)
+                except ValueError:
+                    await ctx.send("Improper usage of command. Please try again.")
+            else:
+                await ctx.send("Access denied. You must have the proper role to use this command.")
+        else:
+            await ctx.send("Corona config not set up. "
+                           "Please use the config command to set up the corona channel and role.")
+
     # test command
     @commands.command()
     async def test(self, ctx):
         if str(ctx.message.author.id) == BOT_OWNER:
             await ctx.send("Bot owner recognized. This is a test of the coronavirus stats accessor system.")
-
-            data = get_cwru_data()
-            if data is not None:
-                embeds = []
-
-                for i in range(3):
-                    embed = Embed()
-                    # embed.set_author(name="Nobelium")
-                    embed.set_image(url=data["charts"][i])
-                    dates = data['data']['dates']['str']
-                    if i == 0:
-                        embed.title = f"CWRU Cases Report for Week of {dates[len(dates) - 1]}:"
-
-                        staff_cases = data['data']['cases']['staff']
-                        embed.add_field(name="Faculty/Staff Cases", value=get_diff_string(staff_cases))
-
-                        student_cases = data['data']['cases']['students']
-                        embed.add_field(name="Student Cases", value=get_diff_string(student_cases))
-
-                        total_cases = list(map(add, staff_cases, student_cases))
-                        embed.add_field(name="Total Cases", value=get_diff_string(total_cases))
-
-                        embed.add_field(name="Cumulative Faculty/Staff Cases", value=f"**{sum(staff_cases)}**")
-                        embed.add_field(name="Cumulative Student Cases", value=f"**{sum(student_cases)}**")
-                        embed.add_field(name="Cumulative Cases Total", value=f"**{sum(total_cases)}**")
-                    elif i == 1:
-                        embed.title = f"CWRU Tests Report for Week of {dates[len(dates) - 1]}:"
-
-                        tests = data['data']['tests']
-                        embed.add_field(name="Tests Administered", value=f"**{tests[len(tests) - 1]}**")
-                        embed.add_field(name="Cumulative Tests Administered", value=f"**{sum(tests)}**")
-                    else:
-                        embed.title = f"CWRU Percentage Positive Report for Week of {dates[len(dates) - 1]}:"
-
-                        week_percent = data['data']['percentPositive']['weekly']
-                        embed.add_field(name="Percent Positive Rate", value=get_diff_string(week_percent,
-                                                                                            is_percent=True))
-
-                        cum_percent = data['data']['percentPositive']['cumulative']
-                        embed.add_field(name="Cumulative Positive Rate", value=get_diff_string(cum_percent,
-                                                                                               is_percent=True))
-                    embeds.append(embed)
-                    i += 1
-
-                for embed in embeds:
-                    await ctx.send(embed=embed)
-            else:
-                await ctx.send("Error retrieving data: data mismatch")
+            embeds = get_embeds()
+            for embed in embeds:
+                await ctx.send(embed=embed)
         else:
             await ctx.send(f"Access denied. Command reserved for bot owner <@{BOT_OWNER}> only")
+
+
+def get_embeds():
+    data = get_cwru_data()
+
+    if data is not None:
+        embeds = []
+
+        time_str = datetime.now().strftime("%b. %d, %Y at %I:%M %p EST").replace(' 0', ' ')
+        for i in range(3):
+            embed = Embed()
+            embed.set_image(url=data["charts"][i])
+            embed.set_footer(text=f"Last Updated: {time_str}")
+            dates = data['data']['dates']['str']
+            if i == 0:
+                embed.title = f"CWRU Cases Report for Week of {dates[len(dates) - 1]}:"
+
+                staff_cases = data['data']['cases']['staff']
+                embed.add_field(name="Faculty/Staff Cases", value=get_diff_string(staff_cases))
+
+                student_cases = data['data']['cases']['students']
+                embed.add_field(name="Student Cases", value=get_diff_string(student_cases))
+
+                total_cases = list(map(add, staff_cases, student_cases))
+                embed.add_field(name="Total Cases", value=get_diff_string(total_cases))
+
+                embed.add_field(name="Cumulative Faculty/Staff Cases", value=f"**{sum(staff_cases)}**")
+                embed.add_field(name="Cumulative Student Cases", value=f"**{sum(student_cases)}**")
+                embed.add_field(name="Cumulative Cases Total", value=f"**{sum(total_cases)}**")
+            elif i == 1:
+                embed.title = f"CWRU Tests Report for Week of {dates[len(dates) - 1]}:"
+
+                tests = data['data']['tests']
+                embed.add_field(name="Tests Administered", value=f"**{tests[len(tests) - 1]}**")
+                embed.add_field(name="Cumulative Tests Administered", value=f"**{sum(tests)}**")
+            else:
+                embed.title = f"CWRU Percent Positive Report for Week of {dates[len(dates) - 1]}:"
+
+                week_percent = data['data']['percentPositive']['weekly']
+                embed.add_field(name="Percent Positive Rate", value=get_diff_string(week_percent,
+                                                                                    is_percent=True))
+
+                cum_percent = data['data']['percentPositive']['cumulative']
+                embed.add_field(name="Cumulative Positive Rate", value=get_diff_string(cum_percent,
+                                                                                       is_percent=True))
+            embeds.append(embed)
+            i += 1
+
+        return embeds
+    else:
+        return None
 
 
 def get_diff_string(number_array, is_percent=False):
