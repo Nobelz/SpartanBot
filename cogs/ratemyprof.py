@@ -81,11 +81,6 @@ class RateMyProfessor(commands.Cog):
                     plt.clf()
                     await ctx.send(file=discord.File('graph.png'))
 
-    # version command
-    @commands.command()
-    async def version(self, ctx):
-        await ctx.send("Bot version: 1.6.0, made by Nobelium")
-
 
 def setup(bot):
     bot.add_cog(RateMyProfessor(bot))

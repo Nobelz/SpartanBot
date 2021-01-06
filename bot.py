@@ -44,6 +44,11 @@ async def ping(ctx):
     await ctx.send(f"{ctx.author.mention} Pong! {int(round(bot.latency * 1000, 0))}ms")
 
 
+@bot.command()
+async def version(ctx):
+    await ctx.send("Bot version: 1.6.1, made by Nobelium")
+
+
 @bot.command(help='Server configuration of bot')
 async def config(ctx, *, args):
     if is_admin(ctx.message):
