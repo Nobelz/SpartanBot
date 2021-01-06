@@ -93,16 +93,16 @@ class Coronavirus(commands.Cog):
             await ctx.send("Corona config not set up. "
                            "Please use the config command to set up the corona channel and role.")
 
-    # test command
-    @commands.command()
-    async def test(self, ctx):
-        if str(ctx.message.author.id) == BOT_OWNER:
-            await ctx.send("Bot owner recognized. This is a test of the coronavirus stats accessor system.")
-            embeds = get_embeds()
-            for embed in embeds:
-                await ctx.send(embed=embed)
-        else:
-            await ctx.send(f"Access denied. Command reserved for bot owner <@{BOT_OWNER}> only")
+    # # test command
+    # @commands.command()
+    # async def test(self, ctx):
+    #     if str(ctx.message.author.id) == BOT_OWNER:
+    #         await ctx.send("Bot owner recognized. This is a test of the coronavirus stats accessor system.")
+    #         embeds = get_embeds()
+    #         for embed in embeds:
+    #             await ctx.send(embed=embed)
+    #     else:
+    #         await ctx.send(f"Access denied. Command reserved for bot owner <@{BOT_OWNER}> only")
 
 
 def get_embeds():
