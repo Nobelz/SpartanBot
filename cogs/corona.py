@@ -2,11 +2,13 @@ import json
 import os
 import requests
 
+from discord import Embed
 from lxml import etree
 from discord.ext import commands
 from datetime import datetime
 from dotenv import load_dotenv
 from quickchart import QuickChart
+from operator import add
 
 
 load_dotenv()
@@ -30,12 +32,74 @@ class Coronavirus(commands.Cog):
 
             data = get_cwru_data()
             if data is not None:
-                for chart_url in data["charts"]:
-                    await ctx.send(chart_url)
+                embeds = []
+
+                for i in range(3):
+                    embed = Embed()
+                    # embed.set_author(name="Nobelium")
+                    embed.set_image(url=data["charts"][i])
+                    dates = data['data']['dates']['str']
+                    if i == 0:
+                        embed.title = f"CWRU Cases Report for Week of {dates[len(dates) - 1]}:"
+
+                        staff_cases = data['data']['cases']['staff']
+                        embed.add_field(name="Faculty/Staff Cases", value=get_diff_string(staff_cases))
+
+                        student_cases = data['data']['cases']['students']
+                        embed.add_field(name="Student Cases", value=get_diff_string(student_cases))
+
+                        total_cases = list(map(add, staff_cases, student_cases))
+                        embed.add_field(name="Total Cases", value=get_diff_string(total_cases))
+
+                        embed.add_field(name="Cumulative Faculty/Staff Cases", value=f"**{sum(staff_cases)}**")
+                        embed.add_field(name="Cumulative Student Cases", value=f"**{sum(student_cases)}**")
+                        embed.add_field(name="Cumulative Cases Total", value=f"**{sum(total_cases)}**")
+                    elif i == 1:
+                        embed.title = f"CWRU Tests Report for Week of {dates[len(dates) - 1]}:"
+
+                        tests = data['data']['tests']
+                        embed.add_field(name="Tests Administered", value=f"**{tests[len(tests) - 1]}**")
+                        embed.add_field(name="Cumulative Tests Administered", value=f"**{sum(tests)}**")
+                    else:
+                        embed.title = f"CWRU Percentage Positive Report for Week of {dates[len(dates) - 1]}:"
+
+                        week_percent = data['data']['percentPositive']['weekly']
+                        embed.add_field(name="Percent Positive Rate", value=get_diff_string(week_percent,
+                                                                                            is_percent=True))
+
+                        cum_percent = data['data']['percentPositive']['cumulative']
+                        embed.add_field(name="Cumulative Positive Rate", value=get_diff_string(cum_percent,
+                                                                                               is_percent=True))
+                    embeds.append(embed)
+                    i += 1
+
+                for embed in embeds:
+                    await ctx.send(embed=embed)
             else:
                 await ctx.send("Error retrieving data: data mismatch")
         else:
             await ctx.send(f"Access denied. Command reserved for bot owner <@{BOT_OWNER}> only")
+
+
+def get_diff_string(number_array, is_percent=False):
+    emojis = [
+        '<:redarrowup:796451168335167519>',
+        '<:greenarrowdown:796451267039723630>',
+        '<:straightline:796453949129228328>'
+    ]
+
+    current = number_array[len(number_array) - 1]
+    previous = number_array[len(number_array) - 2]
+    if current > previous:
+        emoji_str = f"{emojis[0]} (+{(current - previous) if not is_percent else round(current - previous, 2)}" \
+                    f"{'%' if is_percent else ''})"
+    elif previous > current:
+        emoji_str = f"{emojis[1]} (-{(previous - current) if not is_percent else round(previous - current, 2)}" \
+                    f"{'%' if is_percent else ''})"
+    else:
+        emoji_str = f"{emojis[2]} (+0{'%' if is_percent else ''})"
+
+    return f"**{current}{'%' if is_percent else ''}** {emoji_str}"
 
 
 def get_cwru_data():
@@ -61,8 +125,8 @@ def get_cwru_data():
             date = date.replace(year=2020)
         dates.append(date)
 
-    cases_by_week_students = [float(e.text) for e in cases_by_week.find('div[4]')]
-    cases_by_week_faculty = [float(e.text) for e in cases_by_week.find('div[6]')]
+    cases_by_week_students = [int(float(e.text)) for e in cases_by_week.find('div[4]')]
+    cases_by_week_faculty = [int(float(e.text)) for e in cases_by_week.find('div[6]')]
     date_strings = [d.text.replace('*', '') for d in date_strings]
     tests_administered = [int(float(e.text)) for e in html.xpath('//*[@role="main"]/div[3]/section/div/article/'
                                                                  'div/div/div/div/div[3]/div/canvas/div/'

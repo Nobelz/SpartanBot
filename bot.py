@@ -63,6 +63,24 @@ async def config(ctx, *, args):
                 elif arguments[1] == 'prefix' and len(arguments) == 3:
                     server_dict["prefix"] = arguments[2]
                     message = "Bot prefix set to " + arguments[2] + "."
+                elif arguments[1] == 'coronarole' and len(arguments) == 3:
+                    role_id = parse_role_to_id(arguments[2])
+                    if role_id is not None and ctx.guild.get_role(role_id) is not None:
+                        if "corona" not in server_dict:
+                            server_dict["corona"] = {}
+                        server_dict["corona"]["role"] = role_id
+                        message = "Corona role set to " + arguments[2] + "."
+                    else:
+                        raise ValueError
+                elif arguments[1] == 'coronachannel' and len(arguments) == 3:
+                    channel_id = parse_channel_to_id(arguments[2])
+                    if channel_id is not None and ctx.guild.get_channel(channel_id) is not None:
+                        if "corona" not in server_dict:
+                            server_dict["corona"] = {}
+                        server_dict["corona"]["channel"] = channel_id
+                        message = "Corona channel set to " + arguments[2] + "."
+                    else:
+                        raise ValueError
                 else:
                     raise ValueError
 
@@ -77,11 +95,22 @@ async def config(ctx, *, args):
                 if 'schoolName' in server_dict:
                     await ctx.send("School name: " + server_dict['schoolName'])
                 else:
-                    await ctx.send(f"School name not set yet. "
-                                   f"Set the school name using `{prefix(ctx.guild)}config set schoolname <school name>`")
-
+                    await ctx.send(f"School name not set yet. Set the school name using "
+                                   f"`{prefix(ctx.guild)}config set schoolname <school name>`")
             elif arguments[0] == 'prefix':
                 await ctx.send("Server prefix: " + server_dict["prefix"])
+            elif arguments[0] == 'coronarole':
+                if 'corona' in server_dict and 'role' in server_dict['corona']:
+                    await ctx.send(f"Corona role ID: {server_dict['corona']['role']}")
+                else:
+                    await ctx.send(f"Corona role not set yet. Set the corona role using "
+                                   f"`{prefix(ctx.guild)}config set coronarole <role mention>`")
+            elif arguments[0] == 'coronachannel':
+                if 'corona' in server_dict and 'channel' in server_dict['corona']:
+                    await ctx.send(f"Corona channel ID: {server_dict['corona']['channel']}")
+                else:
+                    await ctx.send(f"Corona channel not set yet. Set the corona channel using "
+                                   f"`{prefix(ctx.guild)}config set coronachannel <channel mention>`")
             else:
                 await ctx.send("Config value with that key not found. Please try again.")
         else:
@@ -89,6 +118,28 @@ async def config(ctx, *, args):
                            f'`{prefix(ctx.guild)}config <key>`')
     else:
         await ctx.send('Access denied. You must have the \'Manage Server\' permissions to access this command.')
+
+
+def parse_role_to_id(role_str):
+    if role_str[1:3] != '@&':
+        return None
+    parse_role_id = role_str[3:len(role_str) - 1]
+    try:
+        parse_role_id = int(parse_role_id)
+        return parse_role_id
+    except ValueError:
+        return None
+
+
+def parse_channel_to_id(channel_str):
+    if channel_str[1] != '#':
+        return None
+    parse_channel_id = channel_str[2:len(channel_str) - 1]
+    try:
+        parse_channel_id = int(parse_channel_id)
+        return parse_channel_id
+    except ValueError:
+        return None
 
 
 @bot.event
