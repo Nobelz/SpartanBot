@@ -192,18 +192,10 @@ async def on_message(message):
             and ('@everyone' in message.content or '@here' in message.content):
         await message.add_reaction('<:banhammer:688897781380939881>')
     else:
+        if message.mentions and message.guild.get_member(481268659856343040) in message.mentions:
+            await message.add_reaction('🧂')
         await bot.process_commands(message)
-
                                    
-#Cameron stuff                                   
-@bot.event
-async def on_message(message):              
-    if isinstance(message.author, Member) is False \
-            and (message.content.lower()._contains_('cam')):
-        await message.add_reaction('<:salt:>')
-    else:
-        await bot.process_commands(message)
-
                                    
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
