@@ -194,7 +194,17 @@ async def on_message(message):
     else:
         await bot.process_commands(message)
 
+                                   
+#Cameron stuff                                   
+@bot.event
+async def on_message(message):              
+    if isinstance(message.author, Member) is False \
+            and (message.content.lower()._contains_('cam')):
+        await message.add_reaction('<:salt:>')
+    else:
+        await bot.process_commands(message)
 
+                                   
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
