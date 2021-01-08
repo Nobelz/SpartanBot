@@ -192,11 +192,19 @@ async def on_message(message):
             and ('@everyone' in message.content or '@here' in message.content):
         await message.add_reaction('<:banhammer:688897781380939881>')
     else:
-        if message.mentions and message.guild.get_member(481268659856343040) in message.mentions:
+        if check_id_in_members(member_id=481268659856343040, member_list=message.mentions):
             await message.add_reaction('🧂')
         await bot.process_commands(message)
                                    
-                                   
+
+def check_id_in_members(member_id, member_list):
+    for member in member_list:
+        if member.id == member_id:
+            return True
+
+    return False
+
+
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
