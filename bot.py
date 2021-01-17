@@ -193,11 +193,17 @@ async def on_message(message):
             and ('@everyone' in message.content or '@here' in message.content):
         await message.add_reaction('<:banhammer:688897781380939881>')
         is_reacted = True
-    if check_id_in_members(member_id=481268659856343040, member_list=message.mentions):
+    if 'cameron' in message.content.lower() or check_id_in_members(member_id=481268659856343040,
+                                                                   member_list=message.mentions):
         await message.add_reaction('🧂')
         is_reacted = True
-    if ('zhanda' in message.content.lower()) or check_id_in_members(member_id=173625956441915392, member_list=message.mentions):
+    if 'zhanda' in message.content.lower() or check_id_in_members(member_id=173625956441915392,
+                                                                  member_list=message.mentions):
         await message.add_reaction('<:Thiccnos:688897525545173258>')
+        is_reacted = True
+    if 'david' in message.content.lower() or check_id_in_members(member_id=757314714396131439,
+                                                               member_list=message.mentions):
+        await message.add_reaction('🧠')
         is_reacted = True
     if not is_reacted:
         await bot.process_commands(message)  
