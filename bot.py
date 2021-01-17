@@ -202,8 +202,18 @@ async def on_message(message):
         await message.add_reaction('<:Thiccnos:688897525545173258>')
         is_reacted = True
     if 'david' in message.content.lower() or check_id_in_members(member_id=757314714396131439,
-                                                               member_list=message.mentions):
+                                                                 member_list=message.mentions) \
+            or 'priyanka' in message.content.lower() or check_id_in_members(member_id=419246473369092099,
+                                                                            member_list=message.mentions):
         await message.add_reaction('🧠')
+        is_reacted = True
+    if 'nobel' in message.content.lower() or check_id_in_members(member_id=305059113862168576,
+                                                                 member_list=message.mentions):
+        await message.add_reaction('🇳')
+        await message.add_reaction('🇴')
+        await message.add_reaction('🇧')
+        await message.add_reaction('🇪')
+        await message.add_reaction('🇱')
         is_reacted = True
     if not is_reacted:
         await bot.process_commands(message)  
