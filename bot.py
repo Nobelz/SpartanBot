@@ -205,6 +205,10 @@ async def on_message(message):
                                                                member_list=message.mentions):
         await message.add_reaction('🧠')
         is_reacted = True
+    if 'adat' in message.content.lower() or check_id_in_members(member_id=493523330050162691,
+                                                               member_list=message.mentions):
+        await ctx.send("https://cdn.discordapp.com/attachments/797011317465677847/797031587145056266/unknown.png")
+        is_reacted = True                               
     if not is_reacted:
         await bot.process_commands(message)  
                                    
