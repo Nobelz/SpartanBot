@@ -205,8 +205,8 @@ async def on_message(message):
                                                                   member_list=message.mentions):
         await message.add_reaction('<:naenae:705245838330429450>')
         is_reacted = True 
-    if 'adam' in message.content.lower() or 'adat' in message.content.lower() or check_id_in_members(member_id=493523330050162691,
-                                                                  member_list=message.mentions):
+    if 'adam' in message.content.lower() or 'adat' in message.content.lower() or check_id_in_members(
+            member_id=493523330050162691, member_list=message.mentions):
         await message.add_reaction('🧯')
         is_reacted = True 
     if 'david' in message.content.lower() or check_id_in_members(member_id=757314714396131439,
