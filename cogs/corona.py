@@ -198,7 +198,7 @@ def get_diff_string(number_array, is_percent=False):
 
 
 def get_cwru_data():
-    campus_url = "https://case.edu/return-to-campus/campus-information/covid-19-testing-and-case-data"
+    campus_url = "https://case.edu/covid19/health-safety/testing/covid-19-testing-and-case-data"
     page = requests.get(campus_url)
     html = etree.HTML(page.text)
     cases_by_week = html.xpath('//*[@role="main"]/div[3]/section/div/article/div/div/div/div/div[2]/div/'
