@@ -1,10 +1,15 @@
 # bot.py
 import os
 import json
+import discord
 
 from discord.ext import commands
 from discord import Member
 from dotenv import load_dotenv
+
+
+intents = discord.Intents.default()
+intents.members = True
 
 
 load_dotenv()
@@ -30,7 +35,7 @@ def is_admin(message):
     return message.author.guild_permissions.manage_guild or str(message.author.id) == BOT_OWNER
 
 
-bot = commands.Bot(command_prefix=_get_prefix)
+bot = commands.Bot(command_prefix=_get_prefix, intents=intents)
 
 
 @bot.event
@@ -135,6 +140,40 @@ async def config(ctx, *, args):
         await ctx.send('Access denied. You must have the \'Manage Server\' permissions to access this command.')
 
 
+@bot.command()
+async def addrole(ctx, *, args):
+    if is_admin(ctx.message):
+        arguments = args.split()
+        if len(arguments) == 2:
+            try:
+                role_id = parse_role_to_id(arguments[0])
+                user_id = parse_user_to_id(arguments[1])
+                if role_id is not None and user_id is not None:
+                    new_role = ctx.guild.get_role(role_id)
+                    user = ctx.guild.get_member(user_id)
+                    if new_role is not None and user is not None:
+                        await user.add_roles(new_role)
+                else:
+                    raise ValueError
+            except ValueError:
+                await ctx.send("Role or user not found.")
+        else:
+            await ctx.send("Improper command usage.")
+    else:
+        await ctx.send("Access denied.")
+
+
+def parse_user_to_id(user_str):
+    if user_str[1:3] != '@!':
+        return None
+    parse_user_id = user_str[3:len(user_str) - 1]
+    try:
+        parse_user_id = int(parse_user_id)
+        return parse_user_id
+    except ValueError:
+        return None
+
+
 def parse_role_to_id(role_str):
     if role_str[1:3] != '@&':
         return None
@@ -188,41 +227,37 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_message(message):
-    is_reacted = False                               
     if isinstance(message.author, Member) and message.author.guild_permissions.mention_everyone is False \
             and ('@everyone' in message.content or '@here' in message.content):
         await message.add_reaction('<:banhammer:688897781380939881>')
-        is_reacted = True
-    if 'cameron' in message.content.lower() or check_id_in_members(member_id=481268659856343040,
-                                                                   member_list=message.mentions):
-        await message.add_reaction('🧂')
-        is_reacted = True
-    if 'zhanda' in message.content.lower() or check_id_in_members(member_id=173625956441915392,
-                                                                  member_list=message.mentions):
-        await message.add_reaction('<:Thiccnos:688897525545173258>')
-        is_reacted = True
-    if 'anjali' in message.content.lower() or check_id_in_members(member_id=672994813490233364,
-                                                                  member_list=message.mentions):
-        await message.add_reaction('<:naenae:705245838330429450>')
-        is_reacted = True 
-    if 'adam' in message.content.lower() or 'adat' in message.content.lower() or check_id_in_members(
-            member_id=493523330050162691, member_list=message.mentions):
-        await message.add_reaction('🧯')
-        is_reacted = True 
-    if 'david' in message.content.lower() or check_id_in_members(member_id=757314714396131439,
-                                                                 member_list=message.mentions) \
-            or 'priyanka' in message.content.lower() or check_id_in_members(member_id=419246473369092099,
-                                                                            member_list=message.mentions) \
-            or 'nobel' in message.content.lower() or check_id_in_members(member_id=305059113862168576,
-                                                                         member_list=message.mentions) \
-            or 'zach' in message.content.lower() or 'zachary' in message.content.lower() or check_id_in_members(
-                member_id=231948123444871168, member_list=message.mentions) \
-            or 'alberto' in message.content.lower() or check_id_in_members(member_id=239538443133124609,
-                                                                           member_list=message.mentions):
-        await message.add_reaction('🧠')
-        is_reacted = True
-    if not is_reacted:
-        await bot.process_commands(message)  
+    else:
+        if 'cameron' in message.content.lower() or check_id_in_members(member_id=481268659856343040,
+                                                                       member_list=message.mentions):
+            await message.add_reaction('🧂')
+        if 'zhanda' in message.content.lower() or check_id_in_members(member_id=173625956441915392,
+                                                                      member_list=message.mentions):
+            await message.add_reaction('<:Thiccnos:688897525545173258>')
+        if 'anjali' in message.content.lower() or check_id_in_members(member_id=672994813490233364,
+                                                                      member_list=message.mentions):
+            await message.add_reaction('<:naenae:705245838330429450>')
+        if 'adam' in message.content.lower() or 'adat' in message.content.lower() or check_id_in_members(
+                member_id=493523330050162691, member_list=message.mentions):
+            await message.add_reaction('🧯')
+        if 'moses' in message.content.lower() or check_id_in_members(member_id=623045203523272704,
+                                                                     member_list=message.mentions):
+            await message.add_reaction('🎹')
+        if 'david' in message.content.lower() or check_id_in_members(member_id=757314714396131439,
+                                                                     member_list=message.mentions) \
+                or 'priyanka' in message.content.lower() or check_id_in_members(member_id=419246473369092099,
+                                                                                member_list=message.mentions) \
+                or 'nobel' in message.content.lower() or check_id_in_members(member_id=305059113862168576,
+                                                                             member_list=message.mentions) \
+                or 'zach' in message.content.lower() or 'zachary' in message.content.lower() or check_id_in_members(
+                    member_id=231948123444871168, member_list=message.mentions) \
+                or 'alberto' in message.content.lower() or check_id_in_members(member_id=239538443133124609,
+                                                                               member_list=message.mentions):
+            await message.add_reaction('🧠')
+        await bot.process_commands(message)
                                    
 
 def check_id_in_members(member_id, member_list):
