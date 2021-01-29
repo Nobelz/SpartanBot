@@ -252,8 +252,8 @@ async def on_message(message):
                                                                                 member_list=message.mentions) \
                 or 'nobel' in message.content.lower() or check_id_in_members(member_id=305059113862168576,
                                                                              member_list=message.mentions) \
-                or 'zach' in message.content.lower() or 'zachary' in message.content.lower() or check_id_in_members(
-                    member_id=231948123444871168, member_list=message.mentions) \
+                or 'zach' in message.content.lower() or check_id_in_members(member_id=231948123444871168,
+                                                                            member_list=message.mentions) \
                 or 'alberto' in message.content.lower() or check_id_in_members(member_id=239538443133124609,
                                                                                member_list=message.mentions) \
                 or 'padma' in message.content.lower() or check_id_in_members(member_id=393942273680998401,
