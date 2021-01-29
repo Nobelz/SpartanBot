@@ -52,7 +52,7 @@ async def ping(ctx):
 
 @bot.command()
 async def version(ctx):
-    await ctx.send("Bot version: 1.6.2, made by Nobelium")
+    await ctx.send("Bot version: 1.7.0, made by Nobelium")
 
 
 @bot.command(help='Server configuration of bot')
