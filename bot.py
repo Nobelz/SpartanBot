@@ -205,41 +205,42 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_message(message):
-    if isinstance(message.author, Member) and message.author.guild_permissions.mention_everyone is False \
-            and ('@everyone' in message.content or '@here' in message.content):
-        await message.add_reaction('<:banhammer:688897781380939881>')
-    else:
-        if 'cameron' in message.content.lower() or check_id_in_members(member_id=481268659856343040,
-                                                                       member_list=message.mentions):
-            await message.add_reaction('🧂')
-        if 'zhanda' in message.content.lower() or check_id_in_members(member_id=173625956441915392,
-                                                                      member_list=message.mentions):
-            await message.add_reaction('<:Thiccnos:688897525545173258>')
-        if 'anjali' in message.content.lower() or check_id_in_members(member_id=672994813490233364,
-                                                                      member_list=message.mentions):
-            await message.add_reaction('<:naenae:705245838330429450>')
-        if 'adam' in message.content.lower() or 'adat' in message.content.lower() or check_id_in_members(
-                member_id=493523330050162691, member_list=message.mentions):
-            await message.add_reaction('🧯')
-        if 'moses' in message.content.lower() or check_id_in_members(member_id=623045203523272704,
-                                                                     member_list=message.mentions):
-            await message.add_reaction('🎹')
-        if 'david' in message.content.lower() or check_id_in_members(member_id=757314714396131439,
-                                                                     member_list=message.mentions) \
-                or 'priyanka' in message.content.lower() or check_id_in_members(member_id=419246473369092099,
+    if message.author != bot.user:
+        if isinstance(message.author, Member) and message.author.guild_permissions.mention_everyone is False \
+                and ('@everyone' in message.content or '@here' in message.content):
+            await message.add_reaction('<:banhammer:688897781380939881>')
+        else:
+            if 'cameron' in message.content.lower() or check_id_in_members(member_id=481268659856343040,
+                                                                           member_list=message.mentions):
+                await message.add_reaction('🧂')
+            if 'zhanda' in message.content.lower() or check_id_in_members(member_id=173625956441915392,
+                                                                          member_list=message.mentions):
+                await message.add_reaction('<:Thiccnos:688897525545173258>')
+            if 'anjali' in message.content.lower() or check_id_in_members(member_id=672994813490233364,
+                                                                          member_list=message.mentions):
+                await message.add_reaction('<:naenae:705245838330429450>')
+            if 'adam' in message.content.lower() or 'adat' in message.content.lower() or check_id_in_members(
+                    member_id=493523330050162691, member_list=message.mentions):
+                await message.add_reaction('🧯')
+            if 'moses' in message.content.lower() or check_id_in_members(member_id=623045203523272704,
+                                                                         member_list=message.mentions):
+                await message.add_reaction('🎹')
+            if 'david' in message.content.lower() or check_id_in_members(member_id=757314714396131439,
+                                                                         member_list=message.mentions) \
+                    or 'priyanka' in message.content.lower() or check_id_in_members(member_id=419246473369092099,
+                                                                                    member_list=message.mentions) \
+                    or 'nobel' in message.content.lower() or check_id_in_members(member_id=305059113862168576,
+                                                                                 member_list=message.mentions) \
+                    or 'zach' in message.content.lower() or check_id_in_members(member_id=231948123444871168,
                                                                                 member_list=message.mentions) \
-                or 'nobel' in message.content.lower() or check_id_in_members(member_id=305059113862168576,
-                                                                             member_list=message.mentions) \
-                or 'zach' in message.content.lower() or check_id_in_members(member_id=231948123444871168,
-                                                                            member_list=message.mentions) \
-                or 'alberto' in message.content.lower() or check_id_in_members(member_id=239538443133124609,
-                                                                               member_list=message.mentions) \
-                or 'padma' in message.content.lower() or check_id_in_members(member_id=393942273680998401,
-                                                                             member_list=message.mentions) \
-                or 'dhananjay' in message.content.lower() or check_id_in_members(member_id=704053193612460132,
-                                                                                 member_list=message.mentions):
-            await message.add_reaction('🧠')
-        await bot.process_commands(message)
+                    or 'alberto' in message.content.lower() or check_id_in_members(member_id=239538443133124609,
+                                                                                   member_list=message.mentions) \
+                    or 'padma' in message.content.lower() or check_id_in_members(member_id=393942273680998401,
+                                                                                 member_list=message.mentions) \
+                    or 'dhananjay' in message.content.lower() or check_id_in_members(member_id=704053193612460132,
+                                                                                     member_list=message.mentions):
+                await message.add_reaction('🧠')
+            await bot.process_commands(message)
                                    
 
 def check_id_in_members(member_id, member_list):
