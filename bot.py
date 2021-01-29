@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 
 intents = discord.Intents.default()
 intents.members = True
+intents.reactions = True
 
 
 load_dotenv()
@@ -140,29 +141,6 @@ async def config(ctx, *, args):
         await ctx.send('Access denied. You must have the \'Manage Server\' permissions to access this command.')
 
 
-@bot.command()
-async def addrole(ctx, *, args):
-    if is_admin(ctx.message):
-        arguments = args.split()
-        if len(arguments) == 2:
-            try:
-                role_id = parse_role_to_id(arguments[0])
-                user_id = parse_user_to_id(arguments[1])
-                if role_id is not None and user_id is not None:
-                    new_role = ctx.guild.get_role(role_id)
-                    user = ctx.guild.get_member(user_id)
-                    if new_role is not None and user is not None:
-                        await user.add_roles(new_role)
-                else:
-                    raise ValueError
-            except ValueError:
-                await ctx.send("Role or user not found.")
-        else:
-            await ctx.send("Improper command usage.")
-    else:
-        await ctx.send("Access denied.")
-
-
 def parse_user_to_id(user_str):
     if user_str[1:3] != '@!':
         return None
@@ -275,5 +253,6 @@ def check_id_in_members(member_id, member_list):
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         bot.load_extension(f'cogs.{filename[:-3]}')
+
 
 bot.run(TOKEN)
