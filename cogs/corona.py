@@ -93,37 +93,6 @@ class Coronavirus(commands.Cog):
             await ctx.send("Corona config not set up. "
                            "Please use the config command to set up the corona channel and role.")
 
-    # quarantine command
-    @commands.command()
-    async def quarantine(self, ctx):
-        page = requests.get("https://coronavirus.ohio.gov/wps/portal/gov/covid-19/families-and-individuals/"
-                            "covid-19-travel-advisory/covid-19-travel-advisory")
-        html = etree.HTML(page.text)
-        state_data = html.xpath('//*[@id="js-odx-content__body"]/table/tbody/tr')
-        states = ""
-        for element in state_data:
-            state = element.xpath('td[1]/p/text()')[0]
-            if state != 'OH':
-                states += f"**{state}**, "
-
-        date = html.xpath('//*[@id="js-odx-content__body"]/p/em/text()')[0].replace('Updated ', '').replace('.', '')
-
-        states = states[:len(states) - 2]
-        await ctx.send(f"The following states have a 7-day rolling average of positivity rates higher than 15.0%, "
-                       f"and will be subject to a 14-day quarantine upon arrival on campus: {states}. This data "
-                       f"was last updated on {date}.")
-
-    # # test command
-    # @commands.command()
-    # async def test(self, ctx):
-    #     if str(ctx.message.author.id) == BOT_OWNER:
-    #         await ctx.send("Bot owner recognized. This is a test of the coronavirus stats accessor system.")
-    #         embeds = get_embeds()
-    #         for embed in embeds:
-    #             await ctx.send(embed=embed)
-    #     else:
-    #         await ctx.send(f"Access denied. Command reserved for bot owner <@{BOT_OWNER}> only")
-
 
 def get_embeds():
     data = get_cwru_data()

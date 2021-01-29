@@ -257,7 +257,9 @@ async def on_message(message):
                 or 'alberto' in message.content.lower() or check_id_in_members(member_id=239538443133124609,
                                                                                member_list=message.mentions) \
                 or 'padma' in message.content.lower() or check_id_in_members(member_id=393942273680998401,
-                                                                             member_list=message.mentions):
+                                                                             member_list=message.mentions) \
+                or 'dhananjay' in message.content.lower() or check_id_in_members(member_id=704053193612460132,
+                                                                                 member_list=message.mentions):
             await message.add_reaction('🧠')
         await bot.process_commands(message)
                                    
