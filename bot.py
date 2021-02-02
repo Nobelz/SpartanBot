@@ -94,9 +94,12 @@ async def config(ctx, *, args):
                                 if 'messages' in server_dict['corona']:
                                     messages = server_dict['corona']['messages']
                                     for message_id in messages:
-                                        message = await channel.fetch_message(message_id)
-                                        if message is not None:
-                                            await message.delete()
+                                        try:
+                                            message = await channel.fetch_message(message_id)
+                                            if message is not None:
+                                                await message.delete()
+                                        except discord.NotFound:
+                                            pass
                             del server_dict['corona']["messages"]
                         server_dict["corona"]["channel"] = channel_id
                         message = "Corona channel set to " + arguments[2] + "."
@@ -225,6 +228,9 @@ async def on_message(message):
             if 'moses' in message.content.lower() or check_id_in_members(member_id=623045203523272704,
                                                                          member_list=message.mentions):
                 await message.add_reaction('🎹')
+            if 'zack' in message.content.lower() or check_id_in_members(430370643003834368,
+                                                                        member_list=message.mentions):
+                await message.add_reaction('👹')
             if 'david' in message.content.lower() or check_id_in_members(member_id=757314714396131439,
                                                                          member_list=message.mentions) \
                     or 'priyanka' in message.content.lower() or check_id_in_members(member_id=419246473369092099,

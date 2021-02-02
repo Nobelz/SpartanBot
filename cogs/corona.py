@@ -2,6 +2,7 @@ import json
 import os
 import requests
 
+from discord import NotFound
 from discord import Embed
 from lxml import etree
 from discord.ext import commands
@@ -43,10 +44,15 @@ class Coronavirus(commands.Cog):
                             if channel is not None:
                                 if 'messages' in server_dict['corona']:
                                     messages = server_dict['corona']['messages']
+
+
                                     for message_id in messages:
-                                        message = await channel.fetch_message(message_id)
-                                        if message is not None:
-                                            await message.delete()
+                                        try:
+                                            message = await channel.fetch_message(message_id)
+                                            if message is not None:
+                                                await message.delete()
+                                        except NotFound:
+                                            pass
                                 ids = []
 
                                 for embed in get_embeds():
@@ -66,13 +72,19 @@ class Coronavirus(commands.Cog):
                                 if channel is not None:
                                     message_ids = server_dict['corona']['messages']
                                     messages = []
+                                    print("hello")
                                     for message_id in message_ids:
-                                        message = await channel.fetch_message(message_id)
-                                        messages.append(message)
-                                    ids = []
+                                        try:
+                                            message = await channel.fetch_message(message_id)
+                                            messages.append(message)
+                                        except NotFound:
+                                            raise LookupError
                                     embeds = get_embeds()
                                     for i in range(3):
-                                        await messages[i].edit(embed=embeds[i])
+                                        if messages[i] is not None:
+                                            await messages[i].edit(embed=embeds[i])
+                                        else:
+                                            raise LookupError
 
                                     end_message = f"Corona stats successfully updated in {channel.mention}."
                                 else:
@@ -87,6 +99,8 @@ class Coronavirus(commands.Cog):
                     await ctx.send(end_message)
                 except ValueError:
                     await ctx.send("Improper usage of command. Please try again.")
+                except LookupError:
+                    await ctx.send("Cannot find messages. Please push the data to fix this problem.")
             else:
                 await ctx.send("Access denied. You must have the proper role to use this command.")
         else:
