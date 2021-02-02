@@ -72,7 +72,6 @@ class Coronavirus(commands.Cog):
                                 if channel is not None:
                                     message_ids = server_dict['corona']['messages']
                                     messages = []
-                                    print("hello")
                                     for message_id in message_ids:
                                         try:
                                             message = await channel.fetch_message(message_id)
