@@ -55,6 +55,15 @@ async def version(ctx):
     await ctx.send("Bot version: 1.7.0, made by Nobelium")
 
 
+@bot.command()
+async def audit(ctx):
+    if is_admin(ctx.message):
+        await save_audit_logs(ctx.guild)
+        await ctx.send("Audit log downloaded.")
+    else:
+        await ctx.send("Access denied.")
+
+
 @bot.command(help='Server configuration of bot')
 async def config(ctx, *, args):
     if is_admin(ctx.message):
@@ -175,6 +184,11 @@ def parse_channel_to_id(channel_str):
         return parse_channel_id
     except ValueError:
         return None
+
+
+async def save_audit_logs(guild):
+    async for entry in guild.audit_logs(limit=100):
+        print(f"{entry.user} did {entry.action} to {entry.target}.")
 
 
 @bot.event
