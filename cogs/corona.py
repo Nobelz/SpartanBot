@@ -45,7 +45,6 @@ class Coronavirus(commands.Cog):
                                 if 'messages' in server_dict['corona']:
                                     messages = server_dict['corona']['messages']
 
-
                                     for message_id in messages:
                                         try:
                                             message = await channel.fetch_message(message_id)
@@ -120,7 +119,7 @@ def get_embeds():
             embed.set_footer(text=f"Last Updated: {time_str}")
             dates = data['data']['dates']['str']
             if i == 0:
-                embed.title = f"CWRU Cases Report for Week of {dates[len(dates) - 1]}:"
+                embed.title = f"CWRU Asymptomatic Cases Report for Week of {dates[len(dates) - 1]}:"
 
                 staff_cases = data['data']['cases']['staff']
                 embed.add_field(name="Faculty/Staff Cases", value=get_diff_string(staff_cases))
@@ -187,21 +186,20 @@ def get_cwru_data():
                                'canvas/div')[0]
     percent_positive = html.xpath('//*[@role="main"]/div[3]/section/div/article/div/div/div/div/div[4]/div/'
                                   'canvas/div')[0]
-
     date_strings = cases_by_week.find('div[2]')
     dates = []
     for date_str in date_strings:
         date_str = date_str.text.split('-')[0]
-        if len(date_str.split('.')[0]) == 4:
-            date_str = date_str[:3] + date_str[4:]
 
-        date = datetime.strptime(date_str, "%b. %d")
+        raw_date_strings = date_str.split(' ')
+        date_str = raw_date_strings[0][:3] + ' ' + raw_date_strings[1]
+
+        date = datetime.strptime(date_str, "%b %d")
         if date.month < 8:
             date = date.replace(year=2021)
         else:
             date = date.replace(year=2020)
         dates.append(date)
-
     cases_by_week_students = [int(float(e.text)) for e in cases_by_week.find('div[4]')]
     cases_by_week_faculty = [int(float(e.text)) for e in cases_by_week.find('div[6]')]
     date_strings = [d.text.replace('*', '') for d in date_strings]

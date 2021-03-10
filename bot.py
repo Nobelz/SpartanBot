@@ -6,6 +6,7 @@ import discord
 from discord.ext import commands
 from discord import Member
 from dotenv import load_dotenv
+from discord.utils import get
 
 
 intents = discord.Intents.default()
@@ -53,6 +54,16 @@ async def ping(ctx):
 @bot.command()
 async def version(ctx):
     await ctx.send("Bot version: 1.7.0, made by Nobelium")
+
+
+@bot.command()
+async def delete(ctx, id):
+    if is_admin(ctx.message):
+        message = await ctx.fetch_message(id)
+        await message.delete()
+        await ctx.message.delete()
+    else:
+        await ctx.send("Access denied.")
 
 
 @bot.command()
@@ -245,6 +256,9 @@ async def on_message(message):
             if 'zack' in message.content.lower() or check_id_in_members(430370643003834368,
                                                                         member_list=message.mentions):
                 await message.add_reaction('👹')
+            if 'jun' in message.content.lower() or check_id_in_members(621074743164141589,
+                                                                       member_list=message.mentions):
+                await message.add_reaction("<:pepe_knife:813824673132970065>")
             if 'david' in message.content.lower() or check_id_in_members(member_id=757314714396131439,
                                                                          member_list=message.mentions) \
                     or 'priyanka' in message.content.lower() or check_id_in_members(member_id=419246473369092099,
