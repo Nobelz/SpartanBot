@@ -6,7 +6,6 @@ import discord
 from discord.ext import commands
 from discord import Member
 from dotenv import load_dotenv
-from discord.utils import get
 
 
 intents = discord.Intents.default()
@@ -263,8 +262,6 @@ async def on_message(message):
                                                                          member_list=message.mentions) \
                     or 'priyanka' in message.content.lower() or check_id_in_members(member_id=419246473369092099,
                                                                                     member_list=message.mentions) \
-                    or 'nobel' in message.content.lower() or check_id_in_members(member_id=305059113862168576,
-                                                                                 member_list=message.mentions) \
                     or 'zach' in message.content.lower() or check_id_in_members(member_id=231948123444871168,
                                                                                 member_list=message.mentions) \
                     or 'alberto' in message.content.lower() or check_id_in_members(member_id=239538443133124609,
